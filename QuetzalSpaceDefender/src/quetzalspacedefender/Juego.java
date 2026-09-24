@@ -1,6 +1,5 @@
 package quetzalspacedefender;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -27,6 +26,7 @@ public class Juego extends JPanel implements KeyListener {
 
     private boolean arriba;
     private boolean abajo;
+
     private boolean jugando = true;
     private boolean partidaRegistrada = false;
 
@@ -35,17 +35,24 @@ public class Juego extends JPanel implements KeyListener {
     private final Piloto piloto;
     private final Nave nave;
 
-    private final ArrayList<Proyectil> proyectiles = new ArrayList<>();
-    private final ArrayList<Enemigo> enemigos = new ArrayList<>();
-    private final ArrayList<Asteroide> asteroides = new ArrayList<>();
-    private final ArrayList<Premio> premios = new ArrayList<>();
+    private final ArrayList<Proyectil> proyectiles =
+            new ArrayList<>();
+
+    private final ArrayList<Enemigo> enemigos =
+            new ArrayList<>();
+
+    private final ArrayList<Asteroide> asteroides =
+            new ArrayList<>();
+
+    private final ArrayList<Premio> premios =
+            new ArrayList<>();
 
     private final Random random = new Random();
 
-    private long ultimoDisparo;
-    private long ultimoEnemigo;
-    private long ultimoAsteroide;
-    private long ultimoPremio;
+    private long ultimoDisparo = 0;
+    private long ultimoEnemigo = 0;
+    private long ultimoAsteroide = 0;
+    private long ultimoPremio = 0;
 
     private final Timer timer;
 
@@ -54,15 +61,26 @@ public class Juego extends JPanel implements KeyListener {
         this.piloto = piloto;
         this.nave = new Nave(piloto.getNave());
 
-        setPreferredSize(new Dimension(ANCHO, ALTO));
+        setPreferredSize(
+                new Dimension(ANCHO, ALTO)
+        );
+
         setBackground(Color.BLACK);
+
         setFocusable(true);
+
         addKeyListener(this);
 
-        timer = new Timer(30, e -> actualizarJuego());
+        timer = new Timer(
+                30,
+                e -> actualizarJuego()
+        );
+
         timer.start();
 
-        SwingUtilities.invokeLater(this::requestFocusInWindow);
+        SwingUtilities.invokeLater(
+                this::requestFocusInWindow
+        );
     }
 
     private void actualizarJuego() {
@@ -73,11 +91,17 @@ public class Juego extends JPanel implements KeyListener {
         }
 
         moverJugador();
+
         generarEnemigo();
+
         generarAsteroide();
+
         generarPremio();
+
         dispararAutomaticamente();
+
         limpiarObjetos();
+
         verificarColisiones();
 
         repaint();
@@ -89,28 +113,43 @@ public class Juego extends JPanel implements KeyListener {
             return;
         }
 
-        int velocidad = Math.max(1, nave.getVelocidad() / 2);
+        int velocidad =
+                Math.max(
+                        1,
+                        nave.getVelocidad() / 2
+                );
 
         if (arriba && jugadorY > 20) {
+
             jugadorY -= velocidad;
         }
 
         if (abajo && jugadorY < ALTO - 80) {
+
             jugadorY += velocidad;
         }
     }
 
     private void generarEnemigo() {
 
-        long actual = System.currentTimeMillis();
+        long actual =
+                System.currentTimeMillis();
 
         if (actual - ultimoEnemigo >= 1200) {
 
-            int y = 40 + random.nextInt(ALTO - 100);
+            int y =
+                    40 + random.nextInt(
+                            ALTO - 100
+                    );
 
-            Enemigo enemigo = new Enemigo(ANCHO, y);
+            Enemigo enemigo =
+                    new Enemigo(
+                            ANCHO,
+                            y
+                    );
 
             enemigos.add(enemigo);
+
             enemigo.start();
 
             ultimoEnemigo = actual;
@@ -119,15 +158,24 @@ public class Juego extends JPanel implements KeyListener {
 
     private void generarAsteroide() {
 
-        long actual = System.currentTimeMillis();
+        long actual =
+                System.currentTimeMillis();
 
         if (actual - ultimoAsteroide >= 2500) {
 
-            int y = 40 + random.nextInt(ALTO - 100);
+            int y =
+                    40 + random.nextInt(
+                            ALTO - 100
+                    );
 
-            Asteroide asteroide = new Asteroide(ANCHO, y);
+            Asteroide asteroide =
+                    new Asteroide(
+                            ANCHO,
+                            y
+                    );
 
             asteroides.add(asteroide);
+
             asteroide.start();
 
             ultimoAsteroide = actual;
@@ -136,19 +184,32 @@ public class Juego extends JPanel implements KeyListener {
 
     private void generarPremio() {
 
-        long actual = System.currentTimeMillis();
+        long actual =
+                System.currentTimeMillis();
 
         if (actual - ultimoPremio >= 5000) {
 
-            int y = 40 + random.nextInt(ALTO - 100);
+            int y =
+                    40 + random.nextInt(
+                            ALTO - 100
+                    );
 
-            Premio.Tipo[] tipos = Premio.Tipo.values();
+            Premio.Tipo[] tipos =
+                    Premio.Tipo.values();
 
             Premio.Tipo tipo =
-                    tipos[random.nextInt(tipos.length)];
+                    tipos[
+                            random.nextInt(
+                                    tipos.length
+                            )
+                    ];
 
             premios.add(
-                    new Premio(ANCHO, y, tipo)
+                    new Premio(
+                            ANCHO,
+                            y,
+                            tipo
+                    )
             );
 
             ultimoPremio = actual;
@@ -157,6 +218,7 @@ public class Juego extends JPanel implements KeyListener {
         for (Premio premio : premios) {
 
             if (premio.isActivo()) {
+
                 premio.mover();
             }
         }
@@ -164,9 +226,11 @@ public class Juego extends JPanel implements KeyListener {
 
     private void dispararAutomaticamente() {
 
-        long actual = System.currentTimeMillis();
+        long actual =
+                System.currentTimeMillis();
 
-        if (actual - ultimoDisparo >= nave.getTiempoDisparo()) {
+        if (actual - ultimoDisparo
+                >= nave.getTiempoDisparo()) {
 
             Proyectil proyectil =
                     new Proyectil(
@@ -175,6 +239,7 @@ public class Juego extends JPanel implements KeyListener {
                     );
 
             proyectiles.add(proyectil);
+
             proyectil.start();
 
             ultimoDisparo = actual;
@@ -183,15 +248,29 @@ public class Juego extends JPanel implements KeyListener {
 
     private void limpiarObjetos() {
 
-        proyectiles.removeIf(p -> !p.isActivo());
-        enemigos.removeIf(e -> !e.isActivo());
-        asteroides.removeIf(a -> !a.isActivo());
-        premios.removeIf(p -> !p.isActivo());
+        proyectiles.removeIf(
+                p -> !p.isActivo()
+        );
+
+        enemigos.removeIf(
+                e -> !e.isActivo()
+        );
+
+        asteroides.removeIf(
+                a -> !a.isActivo()
+        );
+
+        premios.removeIf(
+                p -> !p.isActivo()
+        );
     }
 
     private void verificarColisiones() {
 
-        // Proyectiles contra enemigos.
+        // ==========================================
+        // PROYECTILES CONTRA ENEMIGOS
+        // ==========================================
+
         for (Proyectil proyectil : proyectiles) {
 
             if (!proyectil.isActivo()) {
@@ -205,11 +284,19 @@ public class Juego extends JPanel implements KeyListener {
                 }
 
                 if (colision(
-                        proyectil.getX(), proyectil.getY(), 15, 8,
-                        enemigo.getX(), enemigo.getY(), 40, 30)) {
+                        proyectil.getX(),
+                        proyectil.getY(),
+                        15,
+                        8,
+                        enemigo.getX(),
+                        enemigo.getY(),
+                        40,
+                        30)) {
 
                     enemigo.detener();
+
                     proyectil.detener();
+
                     piloto.sumarPuntos(10);
 
                     break;
@@ -217,7 +304,10 @@ public class Juego extends JPanel implements KeyListener {
             }
         }
 
-        // Jugador contra enemigos.
+        // ==========================================
+        // JUGADOR CONTRA ENEMIGOS
+        // ==========================================
+
         for (Enemigo enemigo : enemigos) {
 
             if (!enemigo.isActivo()) {
@@ -225,15 +315,27 @@ public class Juego extends JPanel implements KeyListener {
             }
 
             if (colision(
-                    jugadorX, jugadorY, 50, 40,
-                    enemigo.getX(), enemigo.getY(), 40, 30)) {
+                    jugadorX,
+                    jugadorY,
+                    50,
+                    40,
+                    enemigo.getX(),
+                    enemigo.getY(),
+                    40,
+                    30)) {
 
-                finDelJuego("Nave destruida");
+                finDelJuego(
+                        "Nave destruida"
+                );
+
                 return;
             }
         }
 
-        // Jugador contra asteroides.
+        // ==========================================
+        // JUGADOR CONTRA ASTEROIDES
+        // ==========================================
+
         for (Asteroide asteroide : asteroides) {
 
             if (!asteroide.isActivo()) {
@@ -241,18 +343,27 @@ public class Juego extends JPanel implements KeyListener {
             }
 
             if (colision(
-                    jugadorX, jugadorY, 50, 40,
-                    asteroide.getX(), asteroide.getY(), 45, 45)) {
+                    jugadorX,
+                    jugadorY,
+                    50,
+                    40,
+                    asteroide.getX(),
+                    asteroide.getY(),
+                    45,
+                    45)) {
 
                 asteroide.detener();
 
-                // El asteroide bloquea al jugador durante 2 segundos.
                 bloqueadoHasta =
-                        System.currentTimeMillis() + 2000;
+                        System.currentTimeMillis()
+                        + 2000;
             }
         }
 
-        // Jugador contra premios.
+        // ==========================================
+        // JUGADOR CONTRA PREMIOS
+        // ==========================================
+
         for (Premio premio : premios) {
 
             if (!premio.isActivo()) {
@@ -260,8 +371,14 @@ public class Juego extends JPanel implements KeyListener {
             }
 
             if (colision(
-                    jugadorX, jugadorY, 50, 40,
-                    premio.getX(), premio.getY(), 30, 30)) {
+                    jugadorX,
+                    jugadorY,
+                    50,
+                    40,
+                    premio.getX(),
+                    premio.getY(),
+                    30,
+                    30)) {
 
                 premio.recoger();
 
@@ -269,25 +386,33 @@ public class Juego extends JPanel implements KeyListener {
 
                     case SNITCH:
 
+                        // +150 puntos
                         piloto.sumarPuntos(150);
 
-                        // Destruye los enemigos visibles.
+                        // Destruye enemigos visibles
                         for (Enemigo enemigo : enemigos) {
-                            enemigo.detener();
+
+                            if (enemigo.isActivo()) {
+                                enemigo.detener();
+                            }
                         }
 
                         break;
 
                     case QUAFFLE:
 
+                        // +10 puntos
                         piloto.sumarPuntos(10);
+
                         break;
 
                     case BLUDGER:
 
-                        // Bloquea al jugador durante 2 segundos.
+                        // Bloquea durante 2 segundos
                         bloqueadoHasta =
-                                System.currentTimeMillis() + 2000;
+                                System.currentTimeMillis()
+                                + 2000;
+
                         break;
                 }
             }
@@ -295,13 +420,37 @@ public class Juego extends JPanel implements KeyListener {
     }
 
     private boolean colision(
-            int x1, int y1, int ancho1, int alto1,
-            int x2, int y2, int ancho2, int alto2) {
+            int x1,
+            int y1,
+            int ancho1,
+            int alto1,
+            int x2,
+            int y2,
+            int ancho2,
+            int alto2) {
 
         return x1 < x2 + ancho2
                 && x1 + ancho1 > x2
                 && y1 < y2 + alto2
                 && y1 + alto1 > y2;
+    }
+
+    private void detenerTodosLosHilos() {
+
+        for (Proyectil proyectil : proyectiles) {
+
+            proyectil.detener();
+        }
+
+        for (Enemigo enemigo : enemigos) {
+
+            enemigo.detener();
+        }
+
+        for (Asteroide asteroide : asteroides) {
+
+            asteroide.detener();
+        }
     }
 
     private void finDelJuego(String motivo) {
@@ -316,29 +465,45 @@ public class Juego extends JPanel implements KeyListener {
             timer.stop();
         }
 
+        detenerTodosLosHilos();
+
         DatosJuego.guardarCambiosPilotos();
+
         registrarPartida(motivo);
 
         JOptionPane.showMessageDialog(
                 this,
+
                 "FIN DE LA PARTIDA\n\n"
-                + "Piloto: " + piloto.getNombre()
-                + "\nNave: " + piloto.getNave()
-                + "\nPuntaje: " + piloto.getPuntaje()
-                + "\nMotivo: " + motivo,
+                + "Piloto: "
+                + piloto.getNombre()
+                + "\nNave: "
+                + piloto.getNave()
+                + "\nDificultad: "
+                + nave.getDificultad()
+                + "\nPuntaje: "
+                + piloto.getPuntaje()
+                + "\nMotivo: "
+                + motivo,
+
                 "Game Over",
+
                 JOptionPane.INFORMATION_MESSAGE
         );
 
         Window ventana =
-                SwingUtilities.getWindowAncestor(this);
+                SwingUtilities.getWindowAncestor(
+                        this
+                );
 
         if (ventana != null) {
+
             ventana.dispose();
         }
     }
 
-    private void registrarPartida(String resultado) {
+    private void registrarPartida(
+            String resultado) {
 
         if (partidaRegistrada) {
             return;
@@ -349,7 +514,9 @@ public class Juego extends JPanel implements KeyListener {
         String fecha =
                 new SimpleDateFormat(
                         "dd/MM/yyyy HH:mm:ss"
-                ).format(new Date());
+                ).format(
+                        new Date()
+                );
 
         Partida partida =
                 new Partida(
@@ -360,20 +527,29 @@ public class Juego extends JPanel implements KeyListener {
                         fecha
                 );
 
-        DatosJuego.registrarPartida(partida);
+        DatosJuego.registrarPartida(
+                partida
+        );
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(
+            Graphics g) {
 
         super.paintComponent(g);
 
         dibujarFondo(g);
+
         dibujarJugador(g);
+
         dibujarProyectiles(g);
+
         dibujarEnemigos(g);
+
         dibujarAsteroides(g);
+
         dibujarPremios(g);
+
         dibujarInformacion(g);
     }
 
@@ -383,10 +559,18 @@ public class Juego extends JPanel implements KeyListener {
 
         for (int i = 0; i < 50; i++) {
 
-            int x = (i * 97) % ANCHO;
-            int y = (i * 53) % ALTO;
+            int x =
+                    (i * 97) % ANCHO;
 
-            g.fillRect(x, y, 2, 2);
+            int y =
+                    (i * 53) % ALTO;
+
+            g.fillRect(
+                    x,
+                    y,
+                    2,
+                    2
+            );
         }
     }
 
@@ -406,11 +590,17 @@ public class Juego extends JPanel implements KeyListener {
             jugadorY + 20
         };
 
-        g.fillPolygon(xPoints, yPoints, 3);
+        g.fillPolygon(
+                xPoints,
+                yPoints,
+                3
+        );
 
-        if (System.currentTimeMillis() < bloqueadoHasta) {
+        if (System.currentTimeMillis()
+                < bloqueadoHasta) {
 
             g.setColor(Color.RED);
+
             g.drawString(
                     "¡BLOQUEADO!",
                     jugadorX - 10,
@@ -419,11 +609,13 @@ public class Juego extends JPanel implements KeyListener {
         }
     }
 
-    private void dibujarProyectiles(Graphics g) {
+    private void dibujarProyectiles(
+            Graphics g) {
 
         g.setColor(Color.YELLOW);
 
-        for (Proyectil proyectil : proyectiles) {
+        for (Proyectil proyectil :
+                proyectiles) {
 
             g.fillRect(
                     proyectil.getX(),
@@ -434,73 +626,109 @@ public class Juego extends JPanel implements KeyListener {
         }
     }
 
-    private void dibujarEnemigos(Graphics g) {
+    private void dibujarEnemigos(
+            Graphics g) {
 
-        for (Enemigo enemigo : enemigos) {
+        for (Enemigo enemigo :
+                enemigos) {
+
             enemigo.dibujar(g);
         }
     }
 
-    private void dibujarAsteroides(Graphics g) {
+    private void dibujarAsteroides(
+            Graphics g) {
 
-        for (Asteroide asteroide : asteroides) {
+        for (Asteroide asteroide :
+                asteroides) {
+
             asteroide.dibujar(g);
         }
     }
 
-    private void dibujarPremios(Graphics g) {
+    private void dibujarPremios(
+            Graphics g) {
 
-        for (Premio premio : premios) {
+        for (Premio premio :
+                premios) {
+
             premio.dibujar(g);
         }
     }
 
-    private void dibujarInformacion(Graphics g) {
+    private void dibujarInformacion(
+            Graphics g) {
 
         g.setColor(Color.WHITE);
 
         g.setFont(
-                new Font("Arial", Font.BOLD, 16)
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        16
+                )
         );
 
         g.drawString(
-                "Piloto: " + piloto.getNombre(),
-                20, 25
+                "Piloto: "
+                + piloto.getNombre(),
+                20,
+                25
         );
 
         g.drawString(
-                "Nave: " + piloto.getNave(),
-                20, 45
+                "Nave: "
+                + piloto.getNave(),
+                20,
+                45
         );
 
         g.drawString(
-                "Puntos: " + piloto.getPuntaje(),
-                20, 65
+                "Dificultad: "
+                + nave.getDificultad(),
+                20,
+                65
+        );
+
+        g.drawString(
+                "Puntos: "
+                + piloto.getPuntaje(),
+                20,
+                85
         );
 
         g.drawString(
                 "↑ ↓ = Mover",
-                700, 25
+                700,
+                25
         );
 
         g.drawString(
                 "ESC = Salir",
-                700, 45
+                700,
+                45
         );
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(
+            KeyEvent e) {
 
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
+        if (e.getKeyCode()
+                == KeyEvent.VK_UP) {
+
             arriba = true;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+        if (e.getKeyCode()
+                == KeyEvent.VK_DOWN) {
+
             abajo = true;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (e.getKeyCode()
+                == KeyEvent.VK_ESCAPE) {
+
             finDelJuego(
                     "Partida terminada por el jugador"
             );
@@ -508,18 +736,24 @@ public class Juego extends JPanel implements KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(
+            KeyEvent e) {
 
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
+        if (e.getKeyCode()
+                == KeyEvent.VK_UP) {
+
             arriba = false;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+        if (e.getKeyCode()
+                == KeyEvent.VK_DOWN) {
+
             abajo = false;
         }
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(
+            KeyEvent e) {
     }
 }
