@@ -1,0 +1,2 @@
+nose|Explorador|570
+Yeremy|Explorador|340
